@@ -1,0 +1,107 @@
+2. Query Documents
+
+- db.inventory.insertMany([
+   { item: "journal", qty: 25, size: { h: 14, w: 21, uom: "cm" }, status: "A" },
+   { item: "notebook", qty: 50, size: { h: 8.5, w: 11, uom: "in" }, status: "A" },
+   { item: "paper", qty: 100, size: { h: 8.5, w: 11, uom: "in" }, status: "D" },
+   { item: "planner", qty: 75, size: { h: 22.85, w: 30, uom: "cm" }, status: "D" },
+   { item: "postcard", qty: 45, size: { h: 10, w: 15.25, uom: "cm" }, status: "A" }
+  ]);
+
+
+
+a. Finding with single field name
+
+- db.inventory.find( { item: "canvas" } )
+
+- db.inventory.find( { status: "D" } )
+
+b. Finding with no field name
+
+- db.inventory.find( {} )
+
+c. Finding with either of one operations
+
+- db.inventory.find( { status: { $in: [ "A", "D" ] } } )
+
+d. Finding with AND operation
+
+- db.inventory.find( { status: "A", qty: { $lt: 30 } } )
+
+e. Finding with OR operation
+
+- db.inventory.find( { $or: [ { status: "A" }, { qty: { $lt: 30 } } ] } )
+
+f. Finding with both AND and OR operations
+
+- db.inventory.find( {
+     status: "A",
+     $or: [ { qty: { $lt: 30 } }, { item: /^p/ } ]
+  } )
+
+
+g. Querying on embedded/nested operations
+
+db.inventory.insertMany( [
+   { item: "journal", qty: 25, size: { h: 14, w: 21, uom: "cm" }, status: "A" },
+   { item: "notebook", qty: 50, size: { h: 8.5, w: 11, uom: "in" }, status: "A" },
+   { item: "paper", qty: 100, size: { h: 8.5, w: 11, uom: "in" }, status: "D" },
+   { item: "planner", qty: 75, size: { h: 22.85, w: 30, uom: "cm" }, status: "D" },
+   { item: "postcard", qty: 45, size: { h: 10, w: 15.25, uom: "cm" }, status: "A" }
+]);
+
+
+- db.inventory.find( { size: { h: 14, w: 21, uom: "cm" } } )
+- db.inventory.find(  { size: { w: 21, h: 14, uom: "cm" } }  )
+- db.inventory.find( { "size.uom": "in" } )
+
+- db.inventory.find( { "size.h": { $lt: 15 } } )
+AND operation
+- db.inventory.find( { "size.h": { $lt: 15 }, "size.uom": "in", status: "D" } )
+
+h. Link for finding arrays:
+https://docs.mongodb.com/manual/tutorial/query-arrays/
+
+i. Link for finding Embedded arrays:
+https://docs.mongodb.com/manual/tutorial/query-array-of-documents/
+
+j. Project Fields to Return from Query
+
+db.inventory.insertMany( [
+  { item: "journal", status: "A", size: { h: 14, w: 21, uom: "cm" }, instock: [ { warehouse: "A", qty: 5 } ] },
+  { item: "notebook", status: "A",  size: { h: 8.5, w: 11, uom: "in" }, instock: [ { warehouse: "C", qty: 5 } ] },
+  { item: "paper", status: "D", size: { h: 8.5, w: 11, uom: "in" }, instock: [ { warehouse: "A", qty: 60 } ] },
+  { item: "planner", status: "D", size: { h: 22.85, w: 30, uom: "cm" }, instock: [ { warehouse: "A", qty: 40 } ] },
+  { item: "postcard", status: "A", size: { h: 10, w: 15.25, uom: "cm" }, instock: [ { warehouse: "B", qty: 15 }, { warehouse: "C", qty: 35 } ] }
+]);
+
+- db.inventory.find( { status: "A" } )
+- db.inventory.find( { status: "A" }, { item: 1, status: 1 } )
+- db.inventory.find( { status: "A" }, { item: 1, status: 1, _id: 0 } )
+- db.inventory.find( { status: "A" }, { status: 0, instock: 0 } )
+
+Returns specific fields in embedded documents
+- db.inventory.find(
+   { status: "A" },
+   { item: 1, status: 1, "size.uom": 1 }
+  )
+
+Link for more examples in above topic
+https://docs.mongodb.com/manual/tutorial/project-fields-from-query-results/
+
+k. Query for Null or Missing Fields 
+
+db.inventory.insertMany([
+   { _id: 1, item: null },
+   { _id: 2 }
+])
+
+- Equality finder
+db.inventory.find( { item: null } )
+
+- Type Check
+db.inventory.find( { item : { $type: 10 } } )
+
+- Existance Check
+db.inventory.find( { item : { $exists: false } } )
+
