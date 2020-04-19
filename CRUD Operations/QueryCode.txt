@@ -105,3 +105,8 @@ db.inventory.find( { item : { $type: 10 } } )
 - Existance Check
 db.inventory.find( { item : { $exists: false } } )
 
+
+
+Reference from:
+https://docs.mongodb.com/manual/tutorial/query-documents/
+

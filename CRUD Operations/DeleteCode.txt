@@ -21,5 +21,7 @@ c. Delete Only One Document that Matches a Condition
 
 db.inventory.deleteOne( { status: "D" } )
 
+
+Reference from:
 https://docs.mongodb.com/manual/tutorial/remove-documents/
 
